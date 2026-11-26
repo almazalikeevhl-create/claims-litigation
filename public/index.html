@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Претензионно-исковая работа</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Реестр-инструмент: шапка с выбором подразделения, вкладки, сводка над таблицей; синий — исходящие, янтарный — входящие */
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --ink:#18202c; --muted:#5b6678; --line:#dde2ea;
+  --accent:#1d3d6b; --accent-soft:#e6ecf5;
+  --in:#a8590c; --in-soft:#fbefe1; --out:#1f5f8a; --out-soft:#e3eff7; --c-in:#b8650f; --c-out:#1f6fb8;
+  --ok:#1d7a4a; --ok-soft:#e2f3ea; --bad:#b4282d; --bad-soft:#fbe6e6; --warn:#946200; --warn-soft:#fbf1d6;
+  --font-display:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --font-body:"IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --radius:8px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151c; --surface:#181e27; --ink:#e6eaf0; --muted:#9aa5b5; --line:#2a3340;
+    --accent:#8fb3e6; --accent-soft:#1f2b3d;
+    --in:#f0a65a; --in-soft:#33261a; --out:#7fbde6; --out-soft:#16293a; --c-in:#d4832f; --c-out:#4e9ee6;
+    --ok:#6fcf9b; --ok-soft:#173025; --bad:#f08a8d; --bad-soft:#3a1d20; --warn:#e9c063; --warn-soft:#352c14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11151c; --surface:#181e27; --ink:#e6eaf0; --muted:#9aa5b5; --line:#2a3340;
+  --accent:#8fb3e6; --accent-soft:#1f2b3d;
+  --in:#f0a65a; --in-soft:#33261a; --out:#7fbde6; --out-soft:#16293a; --c-in:#d4832f; --c-out:#4e9ee6;
+  --ok:#6fcf9b; --ok-soft:#173025; --bad:#f08a8d; --bad-soft:#3a1d20; --warn:#e9c063; --warn-soft:#352c14;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-body)}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;font-weight:600}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:14px}
+.top h1{font-size:24px;color:var(--accent)}
+.top p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.top-actions label{font-size:13px;color:var(--muted)}
+select,input,textarea{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;min-width:0}
+textarea{resize:vertical}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:7px 14px;cursor:pointer;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.tabs{background:var(--surface);border-bottom:1px solid var(--line)}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+.tabs a{padding:10px 14px;text-decoration:none;color:var(--muted);border-bottom:3px solid transparent;font-weight:500;white-space:nowrap}
+.tabs a.active{color:var(--accent);border-bottom-color:var(--accent)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--bad);color:#fff;font-size:12px;text-align:center;margin-left:4px}
+.badge:empty{display:none}
+main .wrap{padding-top:20px;padding-bottom:48px;display:grid;gap:18px}
+.banner{border-radius:var(--radius);padding:10px 14px;font-size:14px;border:1px solid var(--line);background:var(--warn-soft);color:var(--ink)}
+.banner:empty{display:none}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;display:grid;gap:2px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.tile .s{font-size:12px;color:var(--muted)}
+.tile.in{border-left:4px solid var(--in)} .tile.out{border-left:4px solid var(--out)} .tile.alert{border-left:4px solid var(--bad)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:6px 12px;cursor:pointer}
+.seg button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.filters input[type=search]{flex:1 1 220px}
+.tablewrap{overflow-x:auto;border-top:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;background:var(--surface);position:sticky;top:0}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--accent-soft)}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.case-no{font-weight:600;white-space:nowrap}
+.sub{color:var(--muted);font-size:12.5px}
+.subject{max-width:320px}
+.chip{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.chip.in{background:var(--in-soft);color:var(--in)} .chip.out{background:var(--out-soft);color:var(--out)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.neutral{background:var(--accent-soft);color:var(--accent)}
+.chip.ex{background:transparent;border:1px dashed var(--muted);color:var(--muted);font-weight:500}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;padding:10px 12px;font-size:13px;color:var(--muted)}
+/* calendar */
+.cal-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px}
+.cal-head h2{font-size:20px}
+.legend{display:flex;gap:10px;font-size:13px;color:var(--muted);align-items:center}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line)}
+.cal .dow{padding:6px 8px;font-size:12px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--line)}
+.cal .day{min-height:104px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.cal .day:nth-child(7n){border-right:0}
+.cal .day.other{background:var(--bg);color:var(--muted)}
+.cal .day .d{font-size:13px;font-variant-numeric:tabular-nums}
+.cal .day.today .d{background:var(--accent);color:var(--surface);border-radius:999px;width:24px;height:24px;display:grid;place-items:center;font-weight:600}
+.ev{display:block;width:100%;text-align:left;border:0;border-radius:4px;padding:2px 6px;font-size:12px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev.in{background:var(--in-soft);color:var(--in);border-left:3px solid var(--in)}
+.ev.out{background:var(--out-soft);color:var(--out);border-left:3px solid var(--out)}
+.more{font-size:12px;color:var(--muted)}
+.upcoming{display:grid;gap:0}
+.up-row{display:grid;grid-template-columns:120px 1fr auto;gap:12px;padding:10px 12px;border-top:1px solid var(--line);align-items:start;cursor:pointer}
+.up-row:hover{background:var(--accent-soft)}
+.up-date{font-weight:600;font-variant-numeric:tabular-nums}
+.section-title{padding:12px;font-size:17px}
+/* notices */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:14px}
+.rule h3{font-size:15px;margin-bottom:4px}
+.rule p{margin:0;color:var(--muted)}
+.notice{display:grid;grid-template-columns:6px 1fr auto;gap:0 14px;border-top:1px solid var(--line);padding:12px 12px 12px 0}
+.notice .stripe{border-radius:0 3px 3px 0}
+.notice.new .stripe{background:var(--bad)} .notice.done .stripe{background:var(--line)}
+.notice h3{font-family:var(--font-body);font-size:15px;font-weight:600}
+.notice .meta{font-size:13px;color:var(--muted)}
+.notice .act{margin-top:4px;font-size:14px}
+.notice .side{display:flex;flex-direction:column;gap:6px;align-items:flex-end;text-align:right}
+.notice.done h3{color:var(--muted)}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(10,15,25,.45);display:flex;align-items:flex-start;justify-content:center;padding:32px 12px;overflow-y:auto;z-index:20}
+.overlay[hidden]{display:none}
+.modal{background:var(--surface);border-radius:10px;width:min(880px,100%);box-shadow:0 20px 50px rgba(0,0,0,.25);border:1px solid var(--line)}
+.modal header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal header h2{font-size:20px}
+.modal .body{padding:16px 18px;display:grid;gap:16px}
+.modal footer{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line)}
+.x{border:0;background:transparent;font-size:22px;line-height:1;cursor:pointer;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 16px}
+.field{display:grid;gap:4px}
+.field label{font-size:13px;color:var(--muted);font-weight:500}
+.field.full{grid-column:1/-1}
+fieldset{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:0;display:grid;gap:12px}
+legend{font-weight:600;padding:0 6px;font-size:14px}
+.hear-row{display:grid;grid-template-columns:150px 110px 1fr auto;gap:8px;align-items:center}
+.dl{display:grid;grid-template-columns:200px 1fr;gap:6px 14px;font-size:14px;margin:0}
+.dl dt{color:var(--muted)} .dl dd{margin:0}
+.hint{font-size:12.5px;color:var(--muted)}
+.err{color:var(--bad);font-size:13px}
+.checklist{display:flex;flex-wrap:wrap;gap:6px}
+.doc-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:8px 0;border-top:1px solid var(--line);align-items:start}
+.doc-row:first-child{border-top:0}
+.doc-row a{color:var(--accent);font-weight:500;word-break:break-word}
+.doc-kind{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.upl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px 12px;align-items:end;padding-top:10px;border-top:1px dashed var(--line)}
+.upl .field.wide{grid-column:span 2}
+@media (max-width:640px){.upl .field.wide{grid-column:auto}}
+/* analytics */
+.a-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.a-head h2{font-size:22px}
+.a-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.a-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px}
+@media (max-width:520px){.a-grid{grid-template-columns:1fr}}
+.a-sum{padding:14px 16px;font-size:15px;max-width:none}
+.a-sum p{margin:0 0 6px;max-width:90ch}
+.a-sum p:last-child{margin:0}
+.a-note{font-size:12.5px;color:var(--muted);padding:0 12px 12px}
+.chartbox{position:relative;padding:0 12px 12px}
+.chartbox svg{display:block;width:100%;height:auto}
+.c-legend{display:flex;gap:14px;font-size:13px;color:var(--muted);padding:0 12px 6px}
+.c-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--surface);font-size:12.5px;padding:6px 9px;border-radius:6px;white-space:nowrap;z-index:5}
+.tip[hidden]{display:none}
+.rt td{white-space:nowrap}
+.rt th{white-space:normal;min-width:70px}
+.rt td.num,.rt th.num{text-align:right;font-variant-numeric:tabular-nums}
+.rt tbody tr{cursor:default}
+.rt tfoot td{font-weight:600;border-bottom:0}
+.share{display:inline-flex;align-items:center;gap:8px}
+.share .bar{width:60px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.share .bar span{display:block;height:100%;background:var(--ok)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:14px;z-index:30;max-width:90vw}
+.toast[hidden]{display:none}
+@media (max-width:640px){
+  .cal .day{min-height:70px;padding:3px}
+  .ev{font-size:10.5px;padding:1px 3px}
+  .up-row{grid-template-columns:1fr}
+  .hear-row{grid-template-columns:1fr 1fr}
+  .dl{grid-template-columns:1fr}
+  .notice{grid-template-columns:6px 1fr}
+  .notice .side{grid-column:2;align-items:flex-start;text-align:left;margin-top:8px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div>
+      <h1>Претензионно-исковая работа</h1>
+      <p>Реестр входящих и исходящих исков, календарь заседаний, уведомления для выплат и бухгалтерии</p>
+    </div>
+    <div class="top-actions">
+      <label for="dept">Я из подразделения</label>
+      <select id="dept">
+        <option value="legal">Юридическое подразделение</option>
+        <option value="payouts">Подразделение по выплатам</option>
+        <option value="accounting">Бухгалтерия</option>
+      </select>
+      <label for="me">Сотрудник</label>
+      <input id="me" placeholder="Фамилия И.О." style="width:160px" autocomplete="name">
+      <button class="btn primary" id="btnNew" type="button">+ Новое дело</button>
+    </div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Разделы">
+  <div class="wrap">
+    <a href="#registry" data-view="registry">Реестр дел</a>
+    <a href="#calendar" data-view="calendar">Календарь заседаний</a>
+    <a href="#analytics" data-view="analytics">Аналитика</a>
+    <a href="#notices" data-view="notices">Уведомления<span class="badge" id="badge"></span></a>
+  </div>
+</nav>
+<main>
+  <div class="wrap">
+    <div class="banner" id="banner"></div>
+
+    <section id="view-registry" class="view">
+      <div style="display:grid;gap:18px">
+        <div class="tiles" id="tiles"></div>
+        <div class="panel">
+          <div class="filters">
+            <div class="seg" role="group" aria-label="Направление">
+              <button type="button" data-dir="all" class="on">Все</button>
+              <button type="button" data-dir="in">Входящие</button>
+              <button type="button" data-dir="out">Исходящие</button>
+            </div>
+            <select id="fStatus" aria-label="Стадия"></select>
+            <select id="fOutcome" aria-label="Исход"></select>
+            <select id="fResp" aria-label="Ответственный"></select>
+            <input type="search" id="fQ" placeholder="Поиск: № дела, контрагент, предмет, № договора">
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead><tr>
+                <th>Напр.</th><th>№ дела / суд</th><th>Контрагент</th><th>Предмет иска</th>
+                <th style="text-align:right">Сумма требований</th><th>Ответственный</th><th>Статус</th><th>Исход</th><th>Ближайшее заседание</th>
+              </tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+          <div class="foot">
+            <span id="count"></span>
+            <span style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn small" id="btnClearEx" type="button" hidden>Удалить примеры</button>
+              <button class="btn small" id="btnCopy" type="button">Скопировать таблицу для Excel</button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-calendar" class="view" hidden>
+      <div style="display:grid;gap:18px">
+        <div class="panel">
+          <div class="cal-head">
+            <h2 id="calTitle"></h2>
+            <div class="legend"><span class="chip in">входящий</span><span class="chip out">исходящий</span></div>
+            <div style="display:flex;gap:6px">
+              <button class="btn small" id="calPrev" type="button" aria-label="Предыдущий месяц">←</button>
+              <button class="btn small" id="calToday" type="button">Сегодня</button>
+              <button class="btn small" id="calNext" type="button" aria-label="Следующий месяц">→</button>
+            </div>
+          </div>
+          <div class="cal" id="cal"></div>
+        </div>
+        <div class="panel">
+          <h2 class="section-title">Ближайшие заседания (30 дней)</h2>
+          <div class="upcoming" id="upcoming"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="view-analytics" class="view" hidden>
+      <div style="display:grid;gap:18px">
+        <div class="a-head">
+          <h2 id="aTitle">Отчёт о претензионно-исковой работе</h2>
+          <div class="a-controls">
+            <label for="aYear" class="sub">Период</label>
+            <select id="aYear"></select>
+            <select id="aQ" aria-label="Квартал"><option value="">весь год</option><option value="1">I квартал</option><option value="2">II квартал</option><option value="3">III квартал</option><option value="4">IV квартал</option></select>
+            <button class="btn small" id="aCopy" type="button">Скопировать отчёт для Excel</button>
+            <button class="btn small primary" id="aDeck" type="button">Отчёт в формате презентации</button>
+          </div>
+        </div>
+        <div class="tiles" id="aKpi"></div>
+        <div class="panel a-sum" id="aSummary"></div>
+        <div class="a-grid">
+          <div class="panel">
+            <h2 class="section-title">Поступление дел по месяцам</h2>
+            <div class="c-legend"><span><i style="background:var(--c-in)"></i>входящие</span><span><i style="background:var(--c-out)"></i>исходящие</span></div>
+            <div class="chartbox" id="aChart"></div>
+          </div>
+          <div class="panel"><h2 class="section-title">Страховые выплаты и уведомления</h2><div class="tablewrap" id="aIns"></div></div>
+        </div>
+        <div class="panel"><h2 class="section-title">Денежные показатели</h2><div class="tablewrap" id="aMoney"></div></div>
+        <div class="panel">
+            <h2 class="section-title">Исходы рассмотренных дел</h2>
+            <div class="tablewrap" id="aOutcomes"></div>
+            <div class="a-note">«В пользу компании»: по входящим — отказ в иске, оставление без рассмотрения, прекращение; по исходящим — удовлетворение иска.</div>
+        </div>
+        <div class="panel"><h2 class="section-title">По категориям споров</h2><div class="tablewrap" id="aCats"></div></div>
+        <div class="panel"><h2 class="section-title">По ответственным работникам</h2><div class="tablewrap" id="aResp"></div></div>
+        <div class="a-note" style="padding:0">Поступление считается по дате поступления или подачи иска, рассмотрение — по дате вынесения судебного акта, оплата — по дате платёжного поручения. Показатели «в работе» — на текущую дату.</div>
+      </div>
+    </section>
+    <section id="view-notices" class="view" hidden>
+      <div style="display:grid;gap:18px">
+        <div class="rules">
+          <div class="rule"><h3>→ Подразделение по выплатам</h3><p>Регистрируется входящий иск категории «Взыскание страховой выплаты». Цель: сформировать резерв заявленных, но неурегулированных убытков.</p></div>
+          <div class="rule"><h3>→ Бухгалтерия</h3><p>Судебный акт по входящему иску вступил в силу (дата вступления наступила), исход: иск удовлетворён полностью или частично либо мировое соглашение. Цель: оплата.</p></div>
+          <div class="rule"><h3>→ Подразделение по выплатам</h3><p>Судебный акт по иску о страховой выплате вступил в силу. Цель: скорректировать или расформировать резерв.</p></div>
+        </div>
+        <div class="panel">
+          <div class="filters">
+            <div class="seg" role="group" aria-label="Получатель" id="nDeptSeg">
+              <button type="button" data-nd="mine" class="on">Моё подразделение</button>
+              <button type="button" data-nd="payouts">Выплаты</button>
+              <button type="button" data-nd="accounting">Бухгалтерия</button>
+              <button type="button" data-nd="all">Все</button>
+            </div>
+            <div class="seg" role="group" aria-label="Состояние" id="nStateSeg">
+              <button type="button" data-ns="new" class="on">Новые</button>
+              <button type="button" data-ns="done">Исполненные</button>
+              <button type="button" data-ns="all">Все</button>
+            </div>
+          </div>
+          <div id="notices"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="overlay" id="overlay" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="api.js"></script>
+<script>
+(function(){
+"use strict";
+var STATUSES=["Претензия","Первая инстанция","Апелляция","Кассация","Приостановлено","Исполнение","Завершено"];
+var OUTCOMES=["Иск удовлетворён","Иск удовлетворён частично","Отказано в иске","Мировое соглашение","Иск оставлен без рассмотрения","Производство прекращено"];
+var CATS=["Взыскание страховой выплаты","Регресс","Суброгация","Взыскание страховой премии","Договорной спор","Трудовой спор","Иное"];
+var INS_CAT="Взыскание страховой выплаты";
+var PAY_OUTCOMES=["Иск удовлетворён","Иск удовлетворён частично","Мировое соглашение"];
+var DEPTS={legal:"Юридическое подразделение",payouts:"Подразделение по выплатам",accounting:"Бухгалтерия"};
+var MONTHS=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+
+var DOC_KINDS=[["claim","Исковое заявление"],["act","Судебный акт"],["pp-duty","Платёжное поручение: госпошлина за подачу иска"],["pp-pay","Платёжное поручение: выплата по решению суда"],["pretension","Претензия / ответ на претензию"],["other","Иной документ"]];
+function kindName(k){for(var i=0;i<DOC_KINDS.length;i++)if(DOC_KINDS[i][0]===k)return DOC_KINDS[i][1];return "Документ"}
+var S={cases:[],notices:[],files:[],casesServer:false,noticesServer:false,db:null,user:null,uid:null,canWrite:null,mode:"loading",assets:null,openCaseId:null,uploading:false,
+  f:{dir:"all",status:"",outcome:"",resp:"",q:""},nd:"mine",ns:"new",cal:null,dept:"legal",names:{}};
+
+function $(id){return document.getElementById(id)}
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+function pad(n){return n<10?"0"+n:""+n}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function todayISO(){return iso(new Date())}
+function fmtD(s){if(!s||typeof s!=="string")return "";var p=s.split("-");return p.length===3?p[2]+"."+p[1]+"."+p[0]:s}
+function money(n){var x=Number(n);if(!isFinite(x)||n===""||n==null)return "—";return new Intl.NumberFormat("ru-RU",{maximumFractionDigits:2}).format(x)+" ₸"}
+function str(v){return typeof v==="string"?v:(v==null?"":String(v))}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function toast(msg){var t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(function(){t.hidden=true},3200)}
+function banner(msg){$("banner").textContent=msg||""}
+
+function norm(id,d){
+  d=d||{};
+  var h=Array.isArray(d.hearings)?d.hearings.filter(function(x){return x&&typeof x.date==="string"}).map(function(x){return {date:x.date,time:str(x.time),note:str(x.note)}}):[];
+  h.sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time)});
+  return {id:id,dir:d.dir==="out"?"out":"in",category:str(d.category),caseNo:str(d.caseNo),court:str(d.court),counterparty:str(d.counterparty),
+    subject:str(d.subject),claimAmount:d.claimAmount,policyNo:str(d.policyNo),lossNo:str(d.lossNo),responsible:str(d.responsible),
+    status:str(d.status)||"Первая инстанция",outcome:str(d.outcome),decisionDate:str(d.decisionDate),effectiveDate:str(d.effectiveDate),
+    awardedAmount:d.awardedAmount,filedDate:str(d.filedDate),hearings:h,notes:str(d.notes),example:!!d.example,createdAt:str(d.createdAt),updatedAt:str(d.updatedAt)};
+}
+function nextHearing(c){var t=todayISO();for(var i=0;i<c.hearings.length;i++){if(c.hearings[i].date>=t)return c.hearings[i]}return null}
+function isActive(c){return c.status!=="Завершено"&&!(c.effectiveDate&&c.effectiveDate<=todayISO())}
+function inForce(c){return !!(c.effectiveDate&&c.effectiveDate<=todayISO())}
+
+function statusChip(c){
+  if(inForce(c)) return '<span class="chip neutral">Акт вступил в силу</span>';
+  if(c.status==="Приостановлено") return '<span class="chip warn">Приостановлено</span>';
+  if(c.status==="Завершено") return '<span class="chip neutral">Завершено</span>';
+  return '<span class="chip neutral">'+esc(c.status)+'</span>';
+}
+function outcomeChip(c){
+  if(!c.outcome) return '<span class="sub">ещё нет</span>';
+  var good;
+  if(c.outcome==="Иск удовлетворён"||c.outcome==="Иск удовлетворён частично") good=(c.dir==="out");
+  else if(c.outcome==="Отказано в иске") good=(c.dir==="in");
+  var cls=good===true?"ok":good===false?"bad":"neutral";
+  return '<span class="chip '+cls+'">'+esc(c.outcome)+'</span>';
+}
+
+/* ---------- notification rules ---------- */
+function requiredNotices(c){
+  var out=[];
+  if(c.dir!=="in") return out;
+  var ins=c.category===INS_CAT;
+  var base={caseId:c.id,caseNo:c.caseNo,court:c.court,counterparty:c.counterparty,subject:c.subject,policyNo:c.policyNo,lossNo:c.lossNo,responsible:c.responsible,example:c.example};
+  if(ins){
+    out.push(Object.assign({id:c.id+"--reserve",dept:"payouts",kind:"reserve",
+      title:"Поступил иск о взыскании страховой выплаты",
+      action:"Сформировать резерв заявленных, но неурегулированных убытков по заявленной сумме требований.",
+      amount:c.claimAmount},base));
+  }
+  if(inForce(c)&&PAY_OUTCOMES.indexOf(c.outcome)>=0){
+    out.push(Object.assign({id:c.id+"--pay",dept:"accounting",kind:"pay",
+      title:"Судебный акт по входящему иску вступил в силу: требуется оплата",
+      action:"Произвести оплату по судебному акту. Исход: "+c.outcome+". Акт от "+fmtD(c.decisionDate)+", вступил в силу "+fmtD(c.effectiveDate)+".",
+      amount:(c.awardedAmount!==""&&c.awardedAmount!=null)?c.awardedAmount:c.claimAmount},base));
+  }
+  if(inForce(c)&&ins&&c.outcome){
+    var refused=PAY_OUTCOMES.indexOf(c.outcome)<0;
+    out.push(Object.assign({id:c.id+"--reserve-close",dept:"payouts",kind:"reserve-close",
+      title:"Судебный акт по иску о страховой выплате вступил в силу",
+      action:refused?"Расформировать резерв: "+c.outcome.toLowerCase()+".":"Скорректировать резерв по сумме, присуждённой судом ("+money(c.awardedAmount)+"); оплата передана в бухгалтерию.",
+      amount:refused?c.claimAmount:c.awardedAmount},base));
+  }
+  return out;
+}
+var syncing={};
+var syncRunning=false;
+function syncNotices(){
+  if(syncRunning) return;
+  var need=[];
+  var have={};S.notices.forEach(function(n){have[n.id]=1});
+  S.cases.forEach(function(c){requiredNotices(c).forEach(function(r){if(!have[r.id]&&!syncing[r.id])need.push(r)})});
+  if(!need.length) return;
+  if(S.mode==="local"){
+    need.forEach(function(r){S.notices.push(Object.assign({},r,{state:"new",createdAt:new Date().toISOString()}))});
+    renderAll();return;
+  }
+  if(!S.db||S.canWrite===false||!S.casesServer||!S.noticesServer) return;
+  syncRunning=true;
+  (async function(){
+    for(var i=0;i<need.length;i++){
+      var r=need[i];syncing[r.id]=1;
+      try{
+        var ref=S.db.collection("notices").doc(r.id);
+        var g=await ref.get();
+        if(!g.exists){var body=Object.assign({},r);delete body.id;body.state="new";body.createdAt=new Date().toISOString();await ref.set(body);}
+      }catch(e){if(e&&e.code==="invalid_argument"){S.canWrite=false;}}
+      finally{delete syncing[r.id]}
+    }
+    syncRunning=false;
+  })();
+}
+
+/* ---------- rendering ---------- */
+function respList(){var m={};S.cases.forEach(function(c){if(c.responsible)m[c.responsible]=1});return Object.keys(m).sort(function(a,b){return a.localeCompare(b,"ru")})}
+function fillSelect(el,first,list,val){el.innerHTML='<option value="">'+esc(first)+'</option>'+list.map(function(x){return '<option'+(x===val?' selected':'')+' value="'+esc(x)+'">'+esc(x)+'</option>'}).join("")}
+function filtered(){
+  var q=S.f.q.trim().toLowerCase();
+  return S.cases.filter(function(c){
+    if(S.f.dir!=="all"&&c.dir!==S.f.dir) return false;
+    if(S.f.status==="__force"){if(!inForce(c))return false}
+    else if(S.f.status&&c.status!==S.f.status) return false;
+    if(S.f.outcome==="__none"){if(c.outcome)return false}
+    else if(S.f.outcome&&c.outcome!==S.f.outcome) return false;
+    if(S.f.resp&&c.responsible!==S.f.resp) return false;
+    if(q){var hay=[c.caseNo,c.court,c.counterparty,c.subject,c.policyNo,c.lossNo,c.responsible,c.category].join(" ").toLowerCase();if(hay.indexOf(q)<0)return false}
+    return true;
+  }).sort(function(a,b){
+    var ha=nextHearing(a),hb=nextHearing(b);
+    var ka=ha?ha.date+ha.time:"9999",kb=hb?hb.date+hb.time:"9999";
+    if(ka!==kb) return ka.localeCompare(kb);
+    return (b.createdAt||"").localeCompare(a.createdAt||"");
+  });
+}
+function renderTiles(){
+  var t=todayISO(),in14=iso(new Date(Date.now()+14*864e5));
+  var inA=S.cases.filter(function(c){return c.dir==="in"&&isActive(c)});
+  var outA=S.cases.filter(function(c){return c.dir==="out"&&isActive(c)});
+  var sumIn=inA.reduce(function(s,c){return s+(Number(c.claimAmount)||0)},0);
+  var sumOut=outA.reduce(function(s,c){return s+(Number(c.claimAmount)||0)},0);
+  var hear=0;S.cases.forEach(function(c){c.hearings.forEach(function(h){if(h.date>=t&&h.date<=in14)hear++})});
+  var newN=S.notices.filter(function(n){return n.state!=="done"}).length;
+  $("tiles").innerHTML=
+    '<div class="tile in"><span class="k">Входящие иски в работе</span><span class="v">'+inA.length+'</span><span class="s">требования к компании: '+esc(money(sumIn))+'</span></div>'+
+    '<div class="tile out"><span class="k">Исходящие иски в работе</span><span class="v">'+outA.length+'</span><span class="s">требования компании: '+esc(money(sumOut))+'</span></div>'+
+    '<div class="tile"><span class="k">Заседаний в ближайшие 14 дней</span><span class="v">'+hear+'</span><span class="s">см. календарь</span></div>'+
+    '<div class="tile alert"><span class="k">Неисполненные уведомления</span><span class="v">'+newN+'</span><span class="s">выплаты и бухгалтерия</span></div>';
+}
+function renderRegistry(){
+  fillSelect($("fStatus"),"Все стадии",STATUSES,S.f.status);
+  $("fStatus").insertAdjacentHTML("beforeend",'<option value="__force"'+(S.f.status==="__force"?" selected":"")+'>Акт вступил в силу</option>');
+  fillSelect($("fOutcome"),"Любой исход",OUTCOMES,S.f.outcome);
+  $("fOutcome").insertAdjacentHTML("afterbegin",'');
+  $("fOutcome").insertAdjacentHTML("beforeend",'<option value="__none"'+(S.f.outcome==="__none"?" selected":"")+'>Исхода ещё нет</option>');
+  fillSelect($("fResp"),"Все ответственные",respList(),S.f.resp);
+  var list=filtered();
+  if(!list.length){
+    $("rows").innerHTML='<tr><td colspan="9" class="empty">'+(S.mode==="loading"?"Загружаю реестр…":(S.cases.length?"Нет дел под выбранные фильтры.":"Реестр пока пуст. Нажмите «+ Новое дело», чтобы добавить первый иск."))+'</td></tr>';
+  } else {
+    $("rows").innerHTML=list.map(function(c){
+      var h=nextHearing(c);
+      return '<tr data-id="'+esc(c.id)+'">'+
+        '<td><span class="chip '+c.dir+'">'+(c.dir==="in"?"Вход.":"Исх.")+'</span>'+(c.example?'<div style="margin-top:4px"><span class="chip ex">пример</span></div>':'')+'</td>'+
+        '<td><div class="case-no">'+esc(c.caseNo||"без номера")+'</div><div class="sub">'+esc(c.court)+'</div>'+(function(){var n=caseFiles(c.id).length;return n?'<div class="sub">документов: '+n+'</div>':''})()+'</td>'+
+        '<td>'+esc(c.counterparty)+'<div class="sub">'+(c.dir==="in"?"истец":"ответчик")+'</div></td>'+
+        '<td class="subject">'+esc(c.subject)+(c.category?'<div class="sub">'+esc(c.category)+'</div>':'')+'</td>'+
+        '<td class="num">'+esc(money(c.claimAmount))+'</td>'+
+        '<td>'+esc(c.responsible)+'</td>'+
+        '<td>'+statusChip(c)+'</td>'+
+        '<td>'+outcomeChip(c)+(c.effectiveDate?'<div class="sub">в силе с '+esc(fmtD(c.effectiveDate))+'</div>':(c.decisionDate?'<div class="sub">акт от '+esc(fmtD(c.decisionDate))+'</div>':''))+'</td>'+
+        '<td>'+(h?'<b>'+esc(fmtD(h.date))+'</b> '+esc(h.time):'<span class="sub">не назначено</span>')+'</td>'+
+      '</tr>';
+    }).join("");
+  }
+  $("count").textContent="Показано дел: "+list.length+" из "+S.cases.length;
+  $("btnClearEx").hidden=!(S.cases.some(function(c){return c.example})&&S.canWrite!==false);
+  document.querySelectorAll("[data-dir]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-dir")===S.f.dir)});
+}
+function renderCalendar(){
+  var m=S.cal,y=m.getFullYear(),mo=m.getMonth();
+  $("calTitle").textContent=MONTHS[mo]+" "+y;
+  var first=new Date(y,mo,1),off=(first.getDay()+6)%7,start=new Date(y,mo,1-off);
+  var ev={};
+  S.cases.forEach(function(c){c.hearings.forEach(function(h){(ev[h.date]=ev[h.date]||[]).push({c:c,h:h})})});
+  Object.keys(ev).forEach(function(k){ev[k].sort(function(a,b){return a.h.time.localeCompare(b.h.time)})});
+  var html=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(function(d){return '<div class="dow">'+d+'</div>'}).join("");
+  var t=todayISO();
+  for(var i=0;i<42;i++){
+    var d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i),k=iso(d);
+    var items=ev[k]||[];
+    html+='<div class="day'+(d.getMonth()!==mo?" other":"")+(k===t?" today":"")+'"><span class="d">'+d.getDate()+'</span>'+
+      items.slice(0,3).map(function(x){return '<button type="button" class="ev '+x.c.dir+'" data-id="'+esc(x.c.id)+'" title="'+esc((x.h.time?x.h.time+" · ":"")+(x.c.caseNo||"")+" · "+x.c.counterparty+" · "+x.c.subject)+'">'+esc((x.h.time?x.h.time+" ":"")+(x.c.caseNo||x.c.counterparty))+'</button>'}).join("")+
+      (items.length>3?'<span class="more">ещё '+(items.length-3)+'</span>':'')+'</div>';
+    if(i===34&&new Date(start.getFullYear(),start.getMonth(),start.getDate()+35).getMonth()!==mo) break;
+  }
+  $("cal").innerHTML=html;
+  var end=iso(new Date(Date.now()+30*864e5)),up=[];
+  S.cases.forEach(function(c){c.hearings.forEach(function(h){if(h.date>=t&&h.date<=end)up.push({c:c,h:h})})});
+  up.sort(function(a,b){return (a.h.date+a.h.time).localeCompare(b.h.date+b.h.time)});
+  $("upcoming").innerHTML=up.length?up.map(function(x){
+    return '<div class="up-row" data-id="'+esc(x.c.id)+'" tabindex="0"><div><div class="up-date">'+esc(fmtD(x.h.date))+'</div><div class="sub">'+esc(x.h.time||"время не указано")+'</div></div>'+
+      '<div><b>'+esc(x.c.caseNo||"без номера")+'</b> · '+esc(x.c.counterparty)+'<div class="sub">'+esc(x.c.court)+(x.h.note?' · '+esc(x.h.note):'')+'</div><div class="sub">'+esc(x.c.subject)+'</div></div>'+
+      '<div style="text-align:right"><span class="chip '+x.c.dir+'">'+(x.c.dir==="in"?"входящий":"исходящий")+'</span><div class="sub" style="margin-top:4px">'+esc(x.c.responsible)+'</div></div></div>';
+  }).join(""):'<div class="empty">В ближайшие 30 дней заседаний нет.</div>';
+}
+function noticeList(){
+  var dept=S.nd==="mine"?S.dept:S.nd;
+  return S.notices.filter(function(n){
+    if(dept!=="all"&&dept!=="legal"&&n.dept!==dept) return false;
+    if(S.ns==="new"&&n.state==="done") return false;
+    if(S.ns==="done"&&n.state!=="done") return false;
+    return true;
+  }).sort(function(a,b){if((a.state==="done")!==(b.state==="done"))return a.state==="done"?1:-1;return (b.createdAt||"").localeCompare(a.createdAt||"")});
+}
+function renderNotices(){
+  var list=noticeList();
+  document.querySelectorAll("[data-nd]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-nd")===S.nd)});
+  document.querySelectorAll("[data-ns]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-ns")===S.ns)});
+  var mineBtn=document.querySelector('[data-nd="mine"]');mineBtn.textContent=S.dept==="legal"?"Все подразделения":"Моё подразделение";
+  if(!list.length){$("notices").innerHTML='<div class="empty">'+(S.ns==="new"?"Новых уведомлений нет.":"Уведомлений нет.")+'</div>';}
+  else $("notices").innerHTML=list.map(function(n){
+    var done=n.state==="done";
+    var who=done&&n.doneBy?(S.names[n.doneBy]||"сотрудник"):"";
+    return '<div class="notice '+(done?"done":"new")+'"><div class="stripe"></div><div>'+
+      '<div class="meta">'+esc(DEPTS[n.dept]||n.dept)+' · '+esc(n.createdAt?new Date(n.createdAt).toLocaleString("ru-RU",{dateStyle:"short",timeStyle:"short"}):"")+(n.example?' · <span class="chip ex">пример</span>':'')+'</div>'+
+      '<h3>'+esc(n.title)+'</h3>'+
+      '<div class="meta">Дело '+esc(n.caseNo||"без номера")+' · '+esc(n.counterparty)+(n.policyNo?' · договор '+esc(n.policyNo):'')+(n.lossNo?' · убыток '+esc(n.lossNo):'')+'</div>'+
+      '<div class="act">'+esc(n.action)+'</div>'+
+      '<div class="meta">Ответственный юрист: '+esc(n.responsible)+'</div>'+
+      '</div><div class="side"><b style="font-variant-numeric:tabular-nums">'+esc(money(n.amount))+'</b>'+
+      (done?'<span class="chip ok">Исполнено'+(n.doneAt?' '+esc(fmtD(n.doneAt.slice(0,10))):'')+'</span>'+(n.payNo||n.payDate?'<span class="sub">ПП № '+esc(n.payNo||"—")+(n.payDate?' от '+esc(fmtD(n.payDate)):'')+'</span>':'')+(who?'<span class="sub">'+esc(who)+'</span>':'')
+           :(S.canWrite===false?'':'<button type="button" class="btn small primary" data-done="'+esc(n.id)+'">Отметить исполненным</button>'))+
+      '<button type="button" class="btn small" data-open="'+esc(n.caseId)+'">Открыть дело</button></div></div>';
+  }).join("");
+  var badgeN=S.notices.filter(function(n){return n.state!=="done"&&(S.dept==="legal"||n.dept===S.dept)}).length;
+  $("badge").textContent=badgeN?String(badgeN):"";
+}
+function renderAll(){renderTiles();renderRegistry();renderCalendar();renderNotices();renderAnalytics();
+  $("btnNew").disabled=(S.canWrite===false);
+}
+
+/* ---------- analytics ---------- */
+var MSHORT=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+S.a={year:String(new Date().getFullYear()),q:""};
+var A_LAST=null;
+function filedOf(c){return c.filedDate||(c.createdAt||"").slice(0,10)}
+function period(){
+  var y=S.a.year,q=S.a.q;
+  if(y==="all")return {from:"0000-01-01",to:"9999-12-31",label:"за весь период",all:true};
+  var yy=+y;
+  if(q){var m0=(+q-1)*3;return {from:iso(new Date(yy,m0,1)),to:iso(new Date(yy,m0+3,0)),label:"за "+["I","II","III","IV"][+q-1]+" квартал "+yy+" г."}}
+  return {from:yy+"-01-01",to:yy+"-12-31",label:"за "+yy+" год"};
+}
+function inP(d,p){return !!d&&d>=p.from&&d<=p.to}
+function resClass(c){
+  var o=c.outcome;if(!o)return null;
+  if(o==="Мировое соглашение")return "settle";
+  if(o==="Иск удовлетворён частично")return "part";
+  if(c.dir==="in")return o==="Иск удовлетворён"?"unf":"fav";
+  return o==="Иск удовлетворён"?"fav":"unf";
+}
+function num(v){var n=Number(v);return (v===""||v==null||!isFinite(n))?0:n}
+function pct(a,b){return b?Math.round(a*1000/b)/10+" %":"—"}
+function cnt(n){return String(n)}
+function years(){
+  var m={};m[new Date().getFullYear()]=1;
+  S.cases.forEach(function(c){[filedOf(c),c.decisionDate].forEach(function(d){if(d&&/^\d{4}/.test(d))m[d.slice(0,4)]=1})});
+  return Object.keys(m).sort().reverse();
+}
+function tbl(head,rows,foot,numCols){
+  numCols=numCols||[];
+  var th=head.map(function(x,i){return '<th'+(numCols.indexOf(i)>=0?' class="num"':'')+'>'+esc(x)+'</th>'}).join("");
+  var td=function(r){return '<tr>'+r.map(function(x,i){var raw=(x&&x.html)?x.html:esc(x);return '<td'+(numCols.indexOf(i)>=0?' class="num"':'')+'>'+raw+'</td>'}).join("")+'</tr>'};
+  return '<table class="rt"><thead><tr>'+th+'</tr></thead><tbody>'+(rows.length?rows.map(td).join(""):'<tr><td colspan="'+head.length+'" class="empty">Нет данных за период</td></tr>')+'</tbody>'+(foot?'<tfoot>'+td(foot)+'</tfoot>':'')+'</table>';
+}
+function plain(r){return r.map(function(x){return (x&&x.html)?x.text:x})}
+function shareCell(a,b){var p=b?Math.round(a*100/b):0;return {html:'<span class="share"><span class="bar"><span style="width:'+p+'%"></span></span>'+esc(pct(a,b))+'</span>',text:pct(a,b)}}
+
+function computeA(){
+  var p=period(),C=S.cases;
+  var filedIn=C.filter(function(c){return c.dir==="in"&&inP(filedOf(c),p)});
+  var filedOut=C.filter(function(c){return c.dir==="out"&&inP(filedOf(c),p)});
+  var decided=C.filter(function(c){return c.outcome&&inP(c.decisionDate,p)});
+  var dIn=decided.filter(function(c){return c.dir==="in"}),dOut=decided.filter(function(c){return c.dir==="out"});
+  function outc(list){var r={fav:0,part:0,unf:0,settle:0};list.forEach(function(c){var k=resClass(c);if(k)r[k]++});return r}
+  var oIn=outc(dIn),oOut=outc(dOut),oAll=outc(decided);
+  var claimedIn=dIn.reduce(function(s,c){return s+num(c.claimAmount)},0);
+  var awardedIn=dIn.reduce(function(s,c){var k=resClass(c);return s+((k==="unf"||k==="part"||k==="settle")?num(c.awardedAmount):0)},0);
+  var claimedOut=dOut.reduce(function(s,c){return s+num(c.claimAmount)},0);
+  var awardedOut=dOut.reduce(function(s,c){var k=resClass(c);return s+((k==="fav"||k==="part"||k==="settle")?num(c.awardedAmount):0)},0);
+  var fileDate=function(f){return f.date||(f.uploadedAt||"").slice(0,10)};
+  var caseOf={};C.forEach(function(c){caseOf[c.id]=c});
+  var ppPay=S.files.filter(function(f){return f.kind==="pp-pay"&&caseOf[f.caseId]&&inP(fileDate(f),p)});
+  var ppDuty=S.files.filter(function(f){return f.kind==="pp-duty"&&caseOf[f.caseId]&&inP(fileDate(f),p)});
+  var paid=ppPay.reduce(function(s,f){return s+num(f.amount)},0),duty=ppDuty.reduce(function(s,f){return s+num(f.amount)},0);
+  var effIn=C.filter(function(c){return c.dir==="in"&&inP(c.effectiveDate,p)&&PAY_OUTCOMES.indexOf(c.outcome)>=0});
+  var toPay=effIn.reduce(function(s,c){return s+num(c.awardedAmount)},0);
+  var hearings=0;C.forEach(function(c){c.hearings.forEach(function(h){if(inP(h.date,p))hearings++})});
+  var ins=filedIn.filter(function(c){return c.category===INS_CAT});
+  var insOpen=C.filter(function(c){return c.dir==="in"&&c.category===INS_CAT&&isActive(c)});
+  var nP=S.notices.filter(function(n){return inP((n.createdAt||"").slice(0,10),p)});
+  function nStat(dept){var l=nP.filter(function(n){return n.dept===dept});var d=l.filter(function(n){return n.state==="done"});
+    var days=d.filter(function(n){return n.doneAt&&n.createdAt}).map(function(n){return Math.max(0,(Date.parse(n.doneAt)-Date.parse(n.createdAt))/864e5)});
+    return {all:l.length,done:d.length,open:l.length-d.length,avg:days.length?(Math.round(days.reduce(function(a,b){return a+b},0)/days.length*10)/10):null}}
+  return {p:p,filedIn:filedIn,filedOut:filedOut,decided:decided,dIn:dIn,dOut:dOut,oIn:oIn,oOut:oOut,oAll:oAll,claimedIn:claimedIn,awardedIn:awardedIn,claimedOut:claimedOut,awardedOut:awardedOut,
+    paid:paid,ppPayN:ppPay.length,duty:duty,ppDutyN:ppDuty.length,toPay:toPay,effInN:effIn.length,hearings:hearings,ins:ins,insOpen:insOpen,nPay:nStat("payouts"),nAcc:nStat("accounting"),
+    activeIn:C.filter(function(c){return c.dir==="in"&&isActive(c)}).length,activeOut:C.filter(function(c){return c.dir==="out"&&isActive(c)}).length};
+}
+
+function renderAnalytics(){
+  if(!$("aKpi"))return;
+  var ys=years();if(S.a.year!=="all"&&ys.indexOf(S.a.year)<0)ys.unshift(S.a.year);
+  $("aYear").innerHTML=ys.map(function(y){return '<option value="'+esc(y)+'"'+(y===S.a.year?' selected':'')+'>'+esc(y)+'</option>'}).join("")+'<option value="all"'+(S.a.year==="all"?' selected':'')+'>Весь период</option>';
+  $("aQ").disabled=S.a.year==="all";$("aQ").value=S.a.q;
+  var r=computeA(),p=r.p;A_LAST=r;
+  $("aTitle").textContent="Отчёт о претензионно-исковой работе "+p.label;
+  var favAll=r.oAll.fav,decN=r.decided.length;
+  $("aKpi").innerHTML=
+    '<div class="tile in"><span class="k">Поступило входящих исков</span><span class="v">'+r.filedIn.length+'</span><span class="s">на сумму '+esc(money(r.filedIn.reduce(function(s,c){return s+num(c.claimAmount)},0)))+'</span></div>'+
+    '<div class="tile out"><span class="k">Подано исходящих исков</span><span class="v">'+r.filedOut.length+'</span><span class="s">на сумму '+esc(money(r.filedOut.reduce(function(s,c){return s+num(c.claimAmount)},0)))+'</span></div>'+
+    '<div class="tile"><span class="k">Рассмотрено дел</span><span class="v">'+decN+'</span><span class="s">в пользу компании: '+esc(pct(favAll,decN))+'</span></div>'+
+    '<div class="tile"><span class="k">Присуждено с компании</span><span class="v" style="font-size:20px">'+esc(money(r.awardedIn))+'</span><span class="s">из заявленных '+esc(money(r.claimedIn))+'</span></div>'+
+    '<div class="tile"><span class="k">Присуждено в пользу компании</span><span class="v" style="font-size:20px">'+esc(money(r.awardedOut))+'</span><span class="s">из заявленных '+esc(money(r.claimedOut))+'</span></div>'+
+    '<div class="tile"><span class="k">Проведено / назначено заседаний</span><span class="v">'+r.hearings+'</span><span class="s">в работе сейчас: '+r.activeIn+' вх. / '+r.activeOut+' исх.</span></div>';
+  /* summary */
+  var red=r.claimedIn?Math.round((r.claimedIn-r.awardedIn)*1000/r.claimedIn)/10:null;
+  var s=[];
+  s.push("В отчётном периоде поступило "+r.filedIn.length+" входящих исков на сумму "+money(r.filedIn.reduce(function(a,c){return a+num(c.claimAmount)},0))+", подано "+r.filedOut.length+" исходящих исков на сумму "+money(r.filedOut.reduce(function(a,c){return a+num(c.claimAmount)},0))+".");
+  if(decN)s.push("Вынесено судебных актов по "+decN+" делам; в пользу компании — "+favAll+" ("+pct(favAll,decN)+"), частично — "+r.oAll.part+", не в пользу компании — "+r.oAll.unf+", мировых соглашений — "+r.oAll.settle+".");
+  else s.push("Судебных актов в периоде не вынесено.");
+  if(r.dIn.length)s.push("По рассмотренным входящим искам заявлено "+money(r.claimedIn)+", присуждено с компании "+money(r.awardedIn)+(red!=null?"; снижение требований — "+red+" %.":"."));
+  if(r.dOut.length)s.push("По рассмотренным исходящим искам присуждено в пользу компании "+money(r.awardedOut)+" из заявленных "+money(r.claimedOut)+".");
+  s.push("Оплачено по судебным актам "+money(r.paid)+" ("+r.ppPayN+" платёжных поручений), уплачено госпошлины "+money(r.duty)+".");
+  if(r.ins.length)s.push("Поступило исков о взыскании страховой выплаты: "+r.ins.length+" на сумму "+money(r.ins.reduce(function(a,c){return a+num(c.claimAmount)},0))+".");
+  $("aSummary").innerHTML='<h3 style="font-size:16px;margin-bottom:6px">Итоги</h3>'+s.map(function(x){return '<p>'+esc(x)+'</p>'}).join("");
+  A_LAST.summary=s;
+  renderChart(r);
+  /* outcomes */
+  var oh=["Направление","Рассмотрено","В пользу компании","Частично","Не в пользу","Мировое","Доля в пользу"];
+  var orow=function(name,o,n){return [name,cnt(n),cnt(o.fav),cnt(o.part),cnt(o.unf),cnt(o.settle),shareCell(o.fav,n)]};
+  A_LAST.outRows=[orow("Входящие",r.oIn,r.dIn.length),orow("Исходящие",r.oOut,r.dOut.length)];A_LAST.outFoot=orow("Итого",r.oAll,decN);A_LAST.outHead=oh;
+  $("aOutcomes").innerHTML=tbl(oh,A_LAST.outRows,A_LAST.outFoot,[1,2,3,4,5]);
+  /* money */
+  var mh=["Показатель","Количество","Сумма"];
+  A_LAST.moneyHead=mh;A_LAST.moneyRows=[
+    ["Входящие иски: заявлено по рассмотренным делам",cnt(r.dIn.length),money(r.claimedIn)],
+    ["Входящие иски: присуждено с компании","",money(r.awardedIn)],
+    ["Входящие иски: отклонено судом / снижено",red!=null?red+" %":"—",money(r.claimedIn-r.awardedIn)],
+    ["Исходящие иски: заявлено по рассмотренным делам",cnt(r.dOut.length),money(r.claimedOut)],
+    ["Исходящие иски: присуждено в пользу компании","",money(r.awardedOut)],
+    ["Акты по входящим искам вступили в силу, к оплате",cnt(r.effInN),money(r.toPay)],
+    ["Оплачено по судебным актам (платёжные поручения)",cnt(r.ppPayN),money(r.paid)],
+    ["Уплачено госпошлины за подачу исков (платёжные поручения)",cnt(r.ppDutyN),money(r.duty)]];
+  $("aMoney").innerHTML=tbl(mh,A_LAST.moneyRows,null,[1,2]);
+  /* categories */
+  var cats={};
+  function cat(c){var k=c.category||"Без категории";return cats[k]=cats[k]||{n:k,i:0,o:0,sum:0,dec:0,fav:0}}
+  r.filedIn.concat(r.filedOut).forEach(function(c){var x=cat(c);if(c.dir==="in")x.i++;else x.o++;x.sum+=num(c.claimAmount)});
+  r.decided.forEach(function(c){var x=cat(c);x.dec++;if(resClass(c)==="fav")x.fav++});
+  var cl=Object.keys(cats).map(function(k){return cats[k]}).sort(function(a,b){return (b.i+b.o)-(a.i+a.o)||b.dec-a.dec});
+  var ch=["Категория","Вход.","Исх.","Сумма требований","Рассмотрено","В пользу"];
+  A_LAST.catHead=ch;A_LAST.catRows=cl.map(function(x){return [x.n,cnt(x.i),cnt(x.o),money(x.sum),cnt(x.dec),cnt(x.fav)]});
+  $("aCats").innerHTML=tbl(ch,A_LAST.catRows,null,[1,2,3,4,5]);
+  /* insurance & notices */
+  var ih=["Показатель","Значение"];
+  var avg=function(v){return v==null?"—":v+" дн."};
+  A_LAST.insHead=ih;A_LAST.insRows=[
+    ["Поступило исков о взыскании страховой выплаты",cnt(r.ins.length)],
+    ["Сумма требований по ним",money(r.ins.reduce(function(a,c){return a+num(c.claimAmount)},0))],
+    ["Нерассмотренные иски о страховой выплате сейчас",cnt(r.insOpen.length)],
+    ["Заявленные требования по ним (база для РЗУ)",money(r.insOpen.reduce(function(a,c){return a+num(c.claimAmount)},0))],
+    ["Уведомлений подразделению по выплатам: создано / исполнено",r.nPay.all+" / "+r.nPay.done],
+    ["Среднее время исполнения (выплаты)",avg(r.nPay.avg)],
+    ["Уведомлений бухгалтерии: создано / исполнено",r.nAcc.all+" / "+r.nAcc.done],
+    ["Среднее время исполнения (бухгалтерия)",avg(r.nAcc.avg)]];
+  $("aIns").innerHTML=tbl(ih,A_LAST.insRows,null,[1]);
+  /* responsible */
+  var rs={};
+  function rp(c){var k=c.responsible||"Не назначен";return rs[k]=rs[k]||{n:k,act:0,fil:0,dec:0,fav:0,h:0}}
+  S.cases.forEach(function(c){var x=rp(c);if(isActive(c))x.act++;if(inP(filedOf(c),p))x.fil++;c.hearings.forEach(function(h){if(inP(h.date,p))x.h++})});
+  r.decided.forEach(function(c){var x=rp(c);x.dec++;if(resClass(c)==="fav")x.fav++});
+  var rl=Object.keys(rs).map(function(k){return rs[k]}).filter(function(x){return x.act||x.fil||x.dec||x.h}).sort(function(a,b){return b.act-a.act||a.n.localeCompare(b.n,"ru")});
+  var rh=["Ответственный","В работе сейчас","Поступило / подано","Заседаний","Рассмотрено","В пользу компании","Доля в пользу"];
+  A_LAST.respHead=rh;A_LAST.respRows=rl.map(function(x){return [x.n,cnt(x.act),cnt(x.fil),cnt(x.h),cnt(x.dec),cnt(x.fav),shareCell(x.fav,x.dec)]});
+  $("aResp").innerHTML=tbl(rh,A_LAST.respRows,null,[1,2,3,4,5]);
+}
+
+function renderChart(r){
+  var p=r.p,start,end;
+  var t=new Date();
+  if(p.all){
+    var mins=S.cases.map(filedOf).filter(Boolean).sort();
+    start=mins.length?new Date(+mins[0].slice(0,4),+mins[0].slice(5,7)-1,1):new Date(t.getFullYear(),t.getMonth(),1);
+    end=new Date(t.getFullYear(),t.getMonth(),1);
+    var lim=new Date(end.getFullYear(),end.getMonth()-23,1);if(start<lim)start=lim;
+  }else{start=new Date(+p.from.slice(0,4),+p.from.slice(5,7)-1,1);end=new Date(+p.to.slice(0,4),+p.to.slice(5,7)-1,1)}
+  var months=[];for(var d=new Date(start);d<=end;d=new Date(d.getFullYear(),d.getMonth()+1,1))months.push({y:d.getFullYear(),m:d.getMonth(),i:0,o:0});
+  var idx={};months.forEach(function(m,k){idx[m.y+"-"+pad(m.m+1)]=k});
+  S.cases.forEach(function(c){var f=filedOf(c);if(!f)return;var k=idx[f.slice(0,7)];if(k==null)return;if(c.dir==="in")months[k].i++;else months[k].o++});
+  A_LAST.months=months;
+  var W=720,H=230,L=34,R=8,T=10,B=28,pw=W-L-R,ph=H-T-B;
+  var max=0;months.forEach(function(m){max=Math.max(max,m.i,m.o)});
+  var step=Math.max(1,Math.ceil(Math.max(max,1)/4)),top=step*Math.ceil(Math.max(max,1)/step);
+  var y=function(v){return T+ph-(v/top)*ph};
+  var g="";
+  for(var v=0;v<=top;v+=step){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)" stroke-width="1"/><text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+v+'</text>'}
+  var n=months.length,slot=pw/n,bw=Math.min(22,Math.max(3,(slot-6)/2-1));
+  var bar=function(x,v,col){if(!v)return "";var y0=y(0),y1=y(v),h=y0-y1,rr=Math.min(4,bw/2,h);return '<path d="M'+x+' '+y0+'V'+(y1+rr)+'Q'+x+' '+y1+' '+(x+rr)+' '+y1+'H'+(x+bw-rr)+'Q'+(x+bw)+' '+y1+' '+(x+bw)+' '+(y1+rr)+'V'+y0+'Z" fill="'+col+'"/>'};
+  var marks="",labels="",hits="";
+  months.forEach(function(m,k){
+    var cx=L+slot*k+slot/2;
+    marks+=bar(cx-bw-1,m.i,"var(--c-in)")+bar(cx+1,m.o,"var(--c-out)");
+    var every=n>12?2:1;
+    if(k%every===0)labels+='<text x="'+cx+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" fill="var(--muted)">'+MSHORT[m.m]+(m.m===0||k===0?" "+String(m.y).slice(2):"")+'</text>';
+    hits+='<rect x="'+(L+slot*k)+'" y="'+T+'" width="'+slot+'" height="'+ph+'" fill="transparent" data-k="'+k+'"/>';
+  });
+  $("aChart").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Поступление входящих и исходящих исков по месяцам">'+g+'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="var(--muted)" stroke-width="1"/>'+marks+labels+hits+'</svg><div class="tip" id="aTip" hidden></div>';
+  var svg=$("aChart").querySelector("svg"),tip=$("aTip");
+  svg.addEventListener("mousemove",function(e){
+    var k=e.target.getAttribute&&e.target.getAttribute("data-k");if(k==null){tip.hidden=true;return}
+    var m=months[+k];tip.textContent=MONTHS[m.m]+" "+m.y+": входящие "+m.i+", исходящие "+m.o;tip.hidden=false;
+    var bx=$("aChart").getBoundingClientRect(),x=e.clientX-bx.left+12;if(x+tip.offsetWidth>bx.width)x=e.clientX-bx.left-tip.offsetWidth-12;
+    tip.style.left=x+"px";tip.style.top=(e.clientY-bx.top-34)+"px";
+  });
+  svg.addEventListener("mouseleave",function(){tip.hidden=true});
+}
+
+async function copyReport(){
+  var r=A_LAST;if(!r)return;
+  var clean=function(v){return String(v==null?"":v).replace(/[\t\r\n]+/g," ")};
+  var out=[];var sec=function(title,head,rows,foot){out.push(title);out.push(head.map(clean).join("\t"));rows.forEach(function(x){out.push(plain(x).map(clean).join("\t"))});if(foot)out.push(plain(foot).map(clean).join("\t"));out.push("")};
+  out.push("Отчёт о претензионно-исковой работе "+r.p.label);out.push("");
+  out.push("Итоги");r.summary.forEach(function(x){out.push(clean(x))});out.push("");
+  sec("Поступление дел по месяцам",["Месяц","Входящие","Исходящие"],r.months.map(function(m){return [MONTHS[m.m]+" "+m.y,m.i,m.o]}));
+  sec("Исходы рассмотренных дел",r.outHead,r.outRows,r.outFoot);
+  sec("Денежные показатели",r.moneyHead,r.moneyRows);
+  sec("По категориям споров",r.catHead,r.catRows);
+  sec("Страховые выплаты и уведомления",r.insHead,r.insRows);
+  sec("По ответственным работникам",r.respHead,r.respRows);
+  try{await navigator.clipboard.writeText(out.join("\n"));toast("Отчёт скопирован: вставьте его в Excel")}catch(e){toast("Браузер не разрешил копирование")}
+}
+$("aYear").addEventListener("change",function(){S.a.year=this.value;if(S.a.year==="all")S.a.q="";renderAnalytics()});
+$("aQ").addEventListener("change",function(){S.a.q=this.value;renderAnalytics()});
+$("aCopy").addEventListener("click",copyReport);
+
+/* ---------- routing ---------- */
+function route(){
+  var v=(location.hash||"#registry").slice(1);if(["registry","calendar","analytics","notices"].indexOf(v)<0)v="registry";
+  document.querySelectorAll(".view").forEach(function(s){s.hidden=s.id!=="view-"+v});
+  document.querySelectorAll(".tabs a").forEach(function(a){a.classList.toggle("active",a.getAttribute("data-view")===v)});
+}
+window.addEventListener("hashchange",route);
+
+/* ---------- modal ---------- */
+function openModal(html){$("modal").innerHTML=html;$("overlay").hidden=false;var f=$("modal").querySelector("input,select,textarea,button");if(f)f.focus()}
+function closeModal(){$("overlay").hidden=true;$("modal").innerHTML="";S.openCaseId=null}
+$("overlay").addEventListener("click",function(e){if(e.target===$("overlay"))closeModal()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("overlay").hidden)closeModal()});
+
+function findCase(id){for(var i=0;i<S.cases.length;i++)if(S.cases[i].id===id)return S.cases[i];return null}
+
+function openDetail(id){
+  var c=findCase(id);if(!c){toast("Дело не найдено");return}
+  var ns=S.notices.filter(function(n){return n.caseId===c.id});
+  var dl=function(k,v){return '<dt>'+esc(k)+'</dt><dd>'+v+'</dd>'};
+  openModal('<header><div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"><span class="chip '+c.dir+'">'+(c.dir==="in"?"Входящий иск":"Исходящий иск")+'</span>'+statusChip(c)+(c.example?'<span class="chip ex">пример</span>':'')+'</div><h2>'+esc(c.caseNo||"Дело без номера")+'</h2><div class="sub">'+esc(c.court)+'</div></div><button class="x" type="button" data-close aria-label="Закрыть">×</button></header>'+
+    '<div class="body">'+
+    '<dl class="dl">'+
+      dl(c.dir==="in"?"Истец":"Ответчик",esc(c.counterparty))+
+      dl("Категория",esc(c.category||"—"))+
+      dl(c.dir==="in"?"Дата поступления":"Дата подачи",esc(fmtD(c.filedDate)||"—"))+
+      dl("Предмет иска",esc(c.subject))+
+      dl("Сумма требований",esc(money(c.claimAmount)))+
+      (c.policyNo||c.lossNo?dl("Договор / убыток",esc((c.policyNo||"—")+" / "+(c.lossNo||"—"))):"")+
+      dl("Ответственный работник",esc(c.responsible))+
+      dl("Стадия",esc(c.status))+
+    '</dl>'+
+    '<fieldset><legend>Исход дела</legend><dl class="dl">'+
+      dl("Исход",outcomeChip(c))+
+      dl("Дата вынесения судебного акта",esc(fmtD(c.decisionDate)||"—"))+
+      dl("Дата вступления в силу",esc(fmtD(c.effectiveDate)||"—"))+
+      dl("Присуждённая сумма",esc(money(c.awardedAmount)))+
+    '</dl></fieldset>'+
+    '<fieldset><legend>Судебные заседания</legend>'+(c.hearings.length?c.hearings.map(function(h){return '<div><b>'+esc(fmtD(h.date))+'</b> '+esc(h.time)+(h.note?' · '+esc(h.note):'')+(h.date<todayISO()?' <span class="sub">(прошло)</span>':'')+'</div>'}).join(""):'<div class="sub">Заседания не назначены</div>')+'</fieldset>'+
+    '<fieldset><legend>Документы</legend><div id="docBox">'+docBoxHtml(c)+'</div>'+uploadFormHtml(c)+'</fieldset>'+
+    (c.notes?'<fieldset><legend>Примечания</legend><div style="white-space:pre-wrap">'+esc(c.notes)+'</div></fieldset>':'')+
+    '<fieldset><legend>Уведомления по делу</legend>'+(ns.length?ns.map(function(n){return '<div>'+(n.state==="done"?'<span class="chip ok">исполнено</span> ':'<span class="chip bad">новое</span> ')+esc(DEPTS[n.dept])+': '+esc(n.title)+'</div>'}).join(""):'<div class="sub">Уведомлений нет</div>')+'</fieldset>'+
+    '</div><footer>'+(S.canWrite===false?'':'<button class="btn danger" type="button" data-del="'+esc(c.id)+'">Удалить</button><button class="btn primary" type="button" data-edit="'+esc(c.id)+'">Редактировать</button>')+'<button class="btn" type="button" data-close>Закрыть</button></footer>');
+  S.openCaseId=c.id;
+  bindUpload(c);
+}
+
+/* ---------- documents ---------- */
+function caseFiles(id){return S.files.filter(function(f){return f.caseId===id}).sort(function(a,b){return ((a.date||a.uploadedAt.slice(0,10))+a.uploadedAt).localeCompare((b.date||b.uploadedAt.slice(0,10))+b.uploadedAt)})}
+function safeAsset(id){return /^[A-Za-z0-9_-]{8,64}$/.test(id)?"/_blob/"+id:""}
+function docBoxHtml(c){
+  var fs=caseFiles(c.id),has={};fs.forEach(function(f){has[f.kind]=1});
+  var need=[];
+  if(c.status!=="Претензия")need.push(["claim","Исковое заявление"]);
+  if(c.dir==="out")need.push(["pp-duty","ПП: госпошлина"]);
+  if(c.outcome||c.decisionDate)need.push(["act","Судебный акт"]);
+  if(c.dir==="in"&&inForce(c)&&PAY_OUTCOMES.indexOf(c.outcome)>=0)need.push(["pp-pay","ПП: выплата по решению"]);
+  var check=need.length?'<div class="checklist" aria-label="Комплектность документов">'+need.map(function(n){return has[n[0]]?'<span class="chip ok">✓ '+esc(n[1])+'</span>':'<span class="chip warn">нет: '+esc(n[1])+'</span>'}).join("")+'</div>':'';
+  var canDel=!!S.assets&&S.canWrite!==false;
+  var list=fs.length?fs.map(function(f){
+    var href=safeAsset(f.assetId);
+    var meta=[];
+    if(f.number)meta.push("№ "+f.number);
+    if(f.date)meta.push("от "+fmtD(f.date));
+    if(f.amount!==""&&f.amount!=null)meta.push(money(f.amount));
+    meta.push("загружен "+fmtD((f.uploadedAt||"").slice(0,10))+(f.uploadedBy&&S.names[f.uploadedBy]?", "+S.names[f.uploadedBy]:""));
+    return '<div class="doc-row"><div><div class="doc-kind">'+esc(kindName(f.kind))+'</div>'+
+      (href?'<a href="'+esc(href)+'" target="_blank" rel="noopener">'+esc(f.name||"файл")+'</a>':esc(f.name||"файл"))+
+      '<div class="sub">'+esc(meta.join(" · "))+'</div></div>'+
+      (canDel?'<button type="button" class="btn small" data-fdel="'+esc(f.id)+'">Удалить</button>':'<span></span>')+'</div>';
+  }).join(""):'<div class="sub">Документы не прикреплены.</div>';
+  return '<div style="display:grid;gap:10px">'+check+'<div>'+list+'</div></div>';
+}
+function uploadFormHtml(c){
+  if(S.mode==="local")return '<div class="hint">Прикрепление файлов доступно, когда сайт открыт через сервер реестра (start.cmd).</div>';
+  if(!S.assets||S.canWrite===false)return '<div class="hint">Прикреплять файлы могут сотрудники с ролью «Участник» или «Редактор».</div>';
+  var def=S.dept==="accounting"?"pp-pay":(c.outcome?"act":(c.dir==="out"?"claim":"claim"));
+  return '<div class="upl" id="uplForm">'+
+    '<div class="field wide"><label for="u-kind">Вид документа</label><select id="u-kind">'+DOC_KINDS.map(function(k){return '<option value="'+k[0]+'"'+(k[0]===def?' selected':'')+'>'+esc(k[1])+'</option>'}).join("")+'</select></div>'+
+    '<div class="field wide"><label for="u-file">Файл (PDF, JPG, PNG, до 20 МБ)</label><input id="u-file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></div>'+
+    '<div class="field"><label for="u-no">Номер документа</label><input id="u-no" placeholder="№"></div>'+
+    '<div class="field"><label for="u-date">Дата документа</label><input id="u-date" type="date"></div>'+
+    '<div class="field" id="u-amt-wrap"><label for="u-amt">Сумма, ₸</label><input id="u-amt" type="number" min="0" step="0.01"></div>'+
+    '<div class="field"><button type="button" class="btn primary" id="u-go">Прикрепить</button></div>'+
+    '<div class="field full"><div class="hint" id="u-msg"></div></div></div>';
+}
+function bindUpload(c){
+  if(!$("uplForm"))return;
+  function sync(){
+    var k=$("u-kind").value,pp=k==="pp-duty"||k==="pp-pay";
+    $("u-amt-wrap").hidden=!pp;
+    if(k==="pp-pay"&&!$("u-amt").value&&c.awardedAmount!==""&&c.awardedAmount!=null)$("u-amt").value=c.awardedAmount;
+    if(k==="act"&&!$("u-date").value&&c.decisionDate)$("u-date").value=c.decisionDate;
+    $("u-msg").textContent=k==="pp-pay"?"После прикрепления уведомление бухгалтерии об оплате по этому делу будет отмечено исполненным.":"";
+  }
+  $("u-kind").addEventListener("change",sync);sync();
+  $("u-go").addEventListener("click",function(){uploadDoc(c.id)});
+}
+function uMsg(t,bad){var m=$("u-msg");if(m){m.textContent=t;m.className=bad?"err":"hint"}}
+async function uploadDoc(caseId){
+  var inp=$("u-file"),file=inp&&inp.files&&inp.files[0];
+  if(!file){uMsg("Выберите файл.",true);return}
+  var ext=(file.name.split(".").pop()||"").toLowerCase();
+  var type={pdf:"application/pdf",jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png"}[ext];
+  if(!type){uMsg("Поддерживаются файлы PDF, JPG и PNG. Документ Word сначала сохраните в PDF.",true);return}
+  if(file.size>20*1048576){uMsg("Файл больше 20 МБ. Сожмите скан или разделите документ на части.",true);return}
+  var kind=$("u-kind").value,pp=kind==="pp-duty"||kind==="pp-pay";
+  var row={caseId:caseId,kind:kind,name:file.name,number:$("u-no").value.trim(),date:$("u-date").value,
+    amount:pp?numOrEmpty($("u-amt").value):"",uploadedAt:new Date().toISOString(),uploadedBy:S.uid||""};
+  $("u-go").disabled=true;S.uploading=true;uMsg("Загружаю файл…");
+  try{
+    var r=await S.assets.upload(file,{type:type});
+    row.assetId=r.id;row.contentType=r.contentType;row.size=r.sizeBytes;
+    await S.db.collection("files").doc().set(row);
+    if(kind==="pp-pay"){
+      var open=S.notices.filter(function(n){return n.caseId===caseId&&n.kind==="pay"&&n.state!=="done"});
+      for(var i=0;i<open.length;i++){
+        try{await S.db.collection("notices").doc(open[i].id).update({state:"done",doneAt:new Date().toISOString(),doneBy:S.uid||"",payNo:row.number,payDate:row.date})}catch(e){}
+      }
+    }
+    S.uploading=false;
+    var c=findCase(caseId);if(c&&$("docBox"))$("docBox").innerHTML=docBoxHtml(c);
+    if($("u-file"))$("u-file").value="";if($("u-no"))$("u-no").value="";
+    uMsg("Документ прикреплён.");toast("Документ прикреплён");
+  }catch(e){
+    S.uploading=false;
+    var code=e&&e.code;
+    uMsg(code==="too_large"?"Файл слишком большой (лимит 20 МБ).":code==="unsupported_type"?"Этот тип файла не принимается: нужен PDF, JPG или PNG.":code==="quota_or_state"?"Хранилище файлов заполнено. Удалите ненужные документы.":code==="rate_limited"?"Слишком много загрузок подряд. Повторите через минуту.":code==="invalid_argument"?"Нет прав на изменение реестра.":"Не удалось загрузить файл. Повторите попытку.",true);
+  }finally{if($("u-go"))$("u-go").disabled=false}
+}
+async function deleteDoc(btn,fid){
+  if(!btn.hasAttribute("data-armed")){btn.setAttribute("data-armed","1");btn.textContent="Точно удалить?";btn.classList.add("danger");return}
+  var f=null;S.files.forEach(function(x){if(x.id===fid)f=x});if(!f)return;
+  btn.disabled=true;
+  try{
+    if(f.assetId&&S.assets){try{await S.assets.delete(f.assetId)}catch(e){if(e&&e.code==="not_uploader"){toast("Удалить файл может только загрузивший его сотрудник или редактор");btn.disabled=false;return}}}
+    await S.db.collection("files").doc(fid).delete();
+    toast("Документ удалён");
+  }catch(e){btn.disabled=false;toast("Не удалось удалить документ")}
+}
+function refreshDocBox(){if(S.openCaseId&&$("docBox")){var c=findCase(S.openCaseId);if(c)$("docBox").innerHTML=docBoxHtml(c)}}
+
+function opts(list,val,empty){return (empty!=null?'<option value="">'+esc(empty)+'</option>':'')+list.map(function(x){return '<option'+(x===val?' selected':'')+' value="'+esc(x)+'">'+esc(x)+'</option>'}).join("")}
+function hearRow(h){h=h||{date:"",time:"",note:""};return '<div class="hear-row"><input type="date" class="h-date" aria-label="Дата заседания" value="'+esc(h.date)+'"><input type="time" class="h-time" aria-label="Время" value="'+esc(h.time)+'"><input type="text" class="h-note" aria-label="Примечание" placeholder="Зал, судья, вид заседания" value="'+esc(h.note)+'"><button type="button" class="btn small" data-hrm aria-label="Удалить заседание">×</button></div>'}
+
+function openForm(id){
+  var c=id?findCase(id):norm(null,{dir:"in",status:"Первая инстанция"});
+  var r=respList();
+  openModal('<header><h2>'+(id?"Редактирование дела":"Новое дело")+'</h2><button class="x" type="button" data-close aria-label="Закрыть">×</button></header>'+
+  '<form id="caseForm" novalidate><div class="body">'+
+  '<div class="grid2">'+
+    '<div class="field"><label for="i-dir">Направление</label><select id="i-dir"><option value="in"'+(c.dir==="in"?" selected":"")+'>Входящий (иск к компании)</option><option value="out"'+(c.dir==="out"?" selected":"")+'>Исходящий (иск компании)</option></select></div>'+
+    '<div class="field"><label for="i-cat">Категория</label><select id="i-cat">'+opts(CATS,c.category,"— выберите —")+'</select></div>'+
+    '<div class="field"><label for="i-filed">Дата поступления / подачи иска</label><input id="i-filed" type="date" value="'+esc(c.filedDate||(id?"":todayISO()))+'"></div>'+
+    '<div class="field"><label for="i-no">№ дела</label><input id="i-no" value="'+esc(c.caseNo)+'" placeholder="например, 7527-26-00-2/1234"></div>'+
+    '<div class="field"><label for="i-court">Суд</label><input id="i-court" value="'+esc(c.court)+'"></div>'+
+    '<div class="field"><label for="i-cp" id="l-cp">'+(c.dir==="in"?"Истец":"Ответчик")+' *</label><input id="i-cp" value="'+esc(c.counterparty)+'"></div>'+
+    '<div class="field"><label for="i-amt">Сумма требований, ₸</label><input id="i-amt" type="number" min="0" step="0.01" value="'+esc(c.claimAmount==null?"":c.claimAmount)+'"></div>'+
+    '<div class="field full"><label for="i-subj">Предмет иска *</label><textarea id="i-subj" rows="2">'+esc(c.subject)+'</textarea></div>'+
+    '<div class="field"><label for="i-pol">№ договора страхования</label><input id="i-pol" value="'+esc(c.policyNo)+'"></div>'+
+    '<div class="field"><label for="i-loss">№ убытка</label><input id="i-loss" value="'+esc(c.lossNo)+'"></div>'+
+    '<div class="field"><label for="i-resp">Ответственный работник *</label><input id="i-resp" list="respList" value="'+esc(c.responsible)+'" placeholder="Фамилия И.О."><datalist id="respList">'+r.map(function(x){return '<option value="'+esc(x)+'"></option>'}).join("")+'</datalist></div>'+
+    '<div class="field"><label for="i-st">Стадия</label><select id="i-st">'+opts(STATUSES,c.status)+'</select></div>'+
+  '</div>'+
+  '<div class="hint" id="insHint"></div>'+
+  '<fieldset><legend>Судебные заседания</legend><div id="hearings" style="display:grid;gap:8px">'+(c.hearings.length?c.hearings.map(hearRow).join(""):hearRow())+'</div><div><button type="button" class="btn small" id="addHear">+ Добавить заседание</button></div></fieldset>'+
+  '<fieldset><legend>Исход дела</legend><div class="grid2">'+
+    '<div class="field"><label for="i-out">Исход</label><select id="i-out">'+opts(OUTCOMES,c.outcome,"Ещё не рассмотрено")+'</select></div>'+
+    '<div class="field"><label for="i-award">Присуждённая сумма, ₸</label><input id="i-award" type="number" min="0" step="0.01" value="'+esc(c.awardedAmount==null?"":c.awardedAmount)+'"></div>'+
+    '<div class="field"><label for="i-dd">Дата вынесения судебного акта</label><input id="i-dd" type="date" value="'+esc(c.decisionDate)+'"></div>'+
+    '<div class="field"><label for="i-ed">Дата вступления в силу</label><input id="i-ed" type="date" value="'+esc(c.effectiveDate)+'"></div>'+
+  '</div><div class="hint" id="payHint"></div></fieldset>'+
+  '<div class="field"><label for="i-notes">Примечания</label><textarea id="i-notes" rows="2">'+esc(c.notes)+'</textarea></div>'+
+  '<div class="err" id="formErr"></div>'+
+  '</div><footer><button class="btn" type="button" data-close>Отмена</button><button class="btn primary" type="submit" id="saveBtn">Сохранить</button></footer></form>');
+  function hints(){
+    var dir=$("i-dir").value;$("l-cp").textContent=(dir==="in"?"Истец":"Ответчик")+" *";
+    $("insHint").textContent=(dir==="in"&&$("i-cat").value===INS_CAT)?"После сохранения подразделение по выплатам автоматически получит уведомление для формирования резерва заявленных, но неурегулированных убытков.":"";
+    var ed=$("i-ed").value,o=$("i-out").value;
+    $("payHint").textContent=(dir==="in"&&ed&&PAY_OUTCOMES.indexOf(o)>=0)?(ed<=todayISO()?"После сохранения бухгалтерия автоматически получит уведомление об оплате.":"Бухгалтерия получит уведомление об оплате "+fmtD(ed)+", в день вступления акта в силу."):"";
+  }
+  ["i-dir","i-cat","i-ed","i-out"].forEach(function(k){$(k).addEventListener("change",hints);$(k).addEventListener("input",hints)});
+  hints();
+  $("addHear").addEventListener("click",function(){$("hearings").insertAdjacentHTML("beforeend",hearRow())});
+  $("hearings").addEventListener("click",function(e){var b=e.target.closest("[data-hrm]");if(b)b.parentNode.remove()});
+  $("caseForm").addEventListener("submit",function(e){e.preventDefault();saveForm(id,c)});
+}
+function numOrEmpty(v){if(v===""||v==null)return "";var n=Number(v);return isFinite(n)?n:""}
+async function saveForm(id,old){
+  var hs=[];document.querySelectorAll("#hearings .hear-row").forEach(function(r){var d=r.querySelector(".h-date").value;if(d)hs.push({date:d,time:r.querySelector(".h-time").value,note:r.querySelector(".h-note").value.trim()})});
+  var body={dir:$("i-dir").value,category:$("i-cat").value,caseNo:$("i-no").value.trim(),court:$("i-court").value.trim(),counterparty:$("i-cp").value.trim(),
+    claimAmount:numOrEmpty($("i-amt").value),filedDate:$("i-filed").value,subject:$("i-subj").value.trim(),policyNo:$("i-pol").value.trim(),lossNo:$("i-loss").value.trim(),
+    responsible:$("i-resp").value.trim(),status:$("i-st").value,hearings:hs,outcome:$("i-out").value,awardedAmount:numOrEmpty($("i-award").value),
+    decisionDate:$("i-dd").value,effectiveDate:$("i-ed").value,notes:$("i-notes").value.trim(),example:!!(old&&old.example),
+    createdAt:(old&&old.createdAt)||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  var miss=[];if(!body.counterparty)miss.push(body.dir==="in"?"истец":"ответчик");if(!body.subject)miss.push("предмет иска");if(!body.responsible)miss.push("ответственный работник");
+  if(miss.length){$("formErr").textContent="Заполните: "+miss.join(", ")+".";return}
+  if(body.effectiveDate&&body.decisionDate&&body.effectiveDate<body.decisionDate){$("formErr").textContent="Дата вступления в силу не может быть раньше даты вынесения акта.";return}
+  if(body.effectiveDate&&!body.outcome){$("formErr").textContent="Укажите исход дела: без него уведомления по вступившему в силу акту не сформируются.";return}
+  $("saveBtn").disabled=true;
+  if(S.mode==="local"){
+    var nid=id||("c"+Date.now());var n=norm(nid,body);
+    if(id){S.cases=S.cases.map(function(x){return x.id===id?n:x})}else S.cases.push(n);
+    closeModal();renderAll();syncNotices();toast("Сохранено (только в этом окне)");return;
+  }
+  try{
+    var ref=id?S.db.collection("cases").doc(id):S.db.collection("cases").doc();
+    await ref.set(body);
+    closeModal();toast(id?"Дело сохранено":"Дело создано: прикрепите документы");
+    var openId=ref.id;setTimeout(function(){if(findCase(openId))openDetail(openId)},400);
+  }catch(e){
+    $("saveBtn").disabled=false;
+    if(e&&e.code==="invalid_argument"){S.canWrite=false;$("formErr").textContent="У вас нет прав на изменение реестра. Попросите владельца страницы выдать доступ «Участник» или «Редактор».";}
+    else if(e&&e.code==="quota_exceeded"){$("formErr").textContent="Хранилище заполнено: удалите старые дела и повторите.";}
+    else $("formErr").textContent="Не удалось сохранить. Проверьте соединение и повторите.";
+  }
+}
+function confirmDelete(id){
+  var c=findCase(id);if(!c)return;
+  openModal('<header><h2>Удалить дело?</h2><button class="x" type="button" data-close aria-label="Закрыть">×</button></header><div class="body"><p style="margin:0">Дело <b>'+esc(c.caseNo||"без номера")+'</b> ('+esc(c.counterparty)+') будет удалено из реестра у всех пользователей вместе с прикреплёнными документами. Уведомления по делу останутся в истории.</p><div class="err" id="delErr"></div></div><footer><button class="btn" type="button" data-close>Отмена</button><button class="btn danger" type="button" id="delYes">Удалить</button></footer>');
+  $("delYes").addEventListener("click",async function(){
+    if(S.mode==="local"){S.cases=S.cases.filter(function(x){return x.id!==id});closeModal();renderAll();return}
+    try{
+      await S.db.collection("cases").doc(id).delete();
+      var fs=caseFiles(id);
+      for(var i=0;i<fs.length;i++){try{if(fs[i].assetId&&S.assets)await S.assets.delete(fs[i].assetId);await S.db.collection("files").doc(fs[i].id).delete()}catch(e){}}
+      closeModal();toast("Дело удалено")}catch(e){$("delErr").textContent="Не удалось удалить. Возможно, у вас нет прав на изменение."}
+  });
+}
+async function markDone(nid){
+  var patch={state:"done",doneAt:new Date().toISOString(),doneBy:S.uid||""};
+  if(S.mode==="local"){S.notices=S.notices.map(function(n){return n.id===nid?Object.assign({},n,patch):n});renderAll();return}
+  try{await S.db.collection("notices").doc(nid).update(patch);toast("Отмечено как исполненное")}catch(e){toast(e&&e.code==="invalid_argument"?"Нет прав на изменение":"Не удалось сохранить, повторите")}
+}
+async function clearExamples(){
+  var ex=S.cases.filter(function(c){return c.example}),exN=S.notices.filter(function(n){return n.example});
+  if(S.mode==="local"){S.cases=S.cases.filter(function(c){return !c.example});S.notices=S.notices.filter(function(n){return !n.example});renderAll();return}
+  try{
+    for(var i=0;i<ex.length;i++)await S.db.collection("cases").doc(ex[i].id).delete();
+    for(var j=0;j<exN.length;j++)await S.db.collection("notices").doc(exN[j].id).delete();
+    toast("Примеры удалены");
+  }catch(e){toast("Не удалось удалить примеры")}
+}
+async function copyTable(){
+  var head=["Направление","№ дела","Суд","Контрагент","Категория","Предмет иска","Сумма требований","№ договора","№ убытка","Ответственный","Стадия","Исход","Дата акта","Дата вступления в силу","Присуждено","Ближайшее заседание"];
+  var clean=function(v){return String(v==null?"":v).replace(/[\t\r\n]+/g," ")};
+  var lines=[head.join("\t")].concat(filtered().map(function(c){var h=nextHearing(c);return [c.dir==="in"?"Входящий":"Исходящий",c.caseNo,c.court,c.counterparty,c.category,c.subject,c.claimAmount,c.policyNo,c.lossNo,c.responsible,c.status,c.outcome,fmtD(c.decisionDate),fmtD(c.effectiveDate),c.awardedAmount,h?fmtD(h.date)+" "+h.time:""].map(clean).join("\t")}));
+  try{await navigator.clipboard.writeText(lines.join("\n"));toast("Таблица скопирована: вставьте её в Excel")}catch(e){toast("Браузер не разрешил копирование")}
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(e){
+  var t=e.target;
+  var b;
+  if((b=t.closest("[data-close]"))){closeModal();return}
+  if((b=t.closest("[data-edit]"))){openForm(b.getAttribute("data-edit"));return}
+  if((b=t.closest("[data-del]"))){confirmDelete(b.getAttribute("data-del"));return}
+  if((b=t.closest("[data-fdel]"))){deleteDoc(b,b.getAttribute("data-fdel"));return}
+  if((b=t.closest("[data-done]"))){b.disabled=true;markDone(b.getAttribute("data-done"));return}
+  if((b=t.closest("[data-open]"))){openDetail(b.getAttribute("data-open"));return}
+  if((b=t.closest("[data-dir]"))){S.f.dir=b.getAttribute("data-dir");renderRegistry();return}
+  if((b=t.closest("[data-nd]"))){S.nd=b.getAttribute("data-nd");renderNotices();return}
+  if((b=t.closest("[data-ns]"))){S.ns=b.getAttribute("data-ns");renderNotices();return}
+  if((b=t.closest("#rows tr[data-id], .ev[data-id], .up-row[data-id]"))){openDetail(b.getAttribute("data-id"));return}
+});
+document.addEventListener("keydown",function(e){if(e.key==="Enter"){var r=e.target.closest&&e.target.closest(".up-row[data-id]");if(r)openDetail(r.getAttribute("data-id"))}});
+$("fStatus").addEventListener("change",function(){S.f.status=this.value;renderRegistry()});
+$("fOutcome").addEventListener("change",function(){S.f.outcome=this.value;renderRegistry()});
+$("fResp").addEventListener("change",function(){S.f.resp=this.value;renderRegistry()});
+$("fQ").addEventListener("input",function(){S.f.q=this.value;renderRegistry()});
+$("btnNew").addEventListener("click",function(){openForm(null)});
+$("btnCopy").addEventListener("click",copyTable);
+$("btnClearEx").addEventListener("click",clearExamples);
+$("calPrev").addEventListener("click",function(){S.cal=new Date(S.cal.getFullYear(),S.cal.getMonth()-1,1);renderCalendar()});
+$("calNext").addEventListener("click",function(){S.cal=new Date(S.cal.getFullYear(),S.cal.getMonth()+1,1);renderCalendar()});
+$("calToday").addEventListener("click",function(){var d=new Date();S.cal=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar()});
+$("dept").addEventListener("change",function(){S.dept=this.value;lsSet("pir-dept",S.dept);renderNotices()});
+
+/* ---------- init ---------- */
+(function(){var d=new Date();S.cal=new Date(d.getFullYear(),d.getMonth(),1);var dp=lsGet("pir-dept");if(dp&&DEPTS[dp])S.dept=dp;$("dept").value=S.dept})();
+route();renderAll();
+
+async function resolveNames(){
+  if(!S.user||!S.user.profiles)return;
+  var ids={};S.notices.forEach(function(n){if(n.doneBy&&!S.names[n.doneBy])ids[n.doneBy]=1});
+  S.files.forEach(function(f){if(f.uploadedBy&&!S.names[f.uploadedBy])ids[f.uploadedBy]=1});
+  var list=Object.keys(ids);if(!list.length)return;
+  try{var ps=await S.user.profiles(list);list.forEach(function(id){S.names[id]=(ps&&ps[id]&&ps[id].name)||"сотрудник"});renderNotices();refreshDocBox()}catch(e){}
+}
+
+async function start(){
+  var cl=window.claude;
+  if(!cl||typeof cl.use!=="function"){goLocal();return}
+  var db=null,user=null;
+  try{db=await cl.use("db")}catch(e){db=null}
+  try{user=await cl.use("user")}catch(e){user=null}
+  try{S.assets=await cl.use("assets")}catch(e){S.assets=null}
+  if(!db){goLocal();return}
+  S.db=db;S.user=user;S.mode="db";
+  if(user){
+    try{S.uid=await user.id()}catch(e){}
+    try{var cw=await user.can("data.write");if(cw===false){S.canWrite=false;banner("У вас доступ только для просмотра. Чтобы вносить дела и отмечать уведомления, попросите владельца страницы выдать роль «Участник» или «Редактор».")}else if(cw===true)S.canWrite=true}catch(e){}
+  }
+  var timer=setTimeout(function(){banner("Реестр пока не загрузился: нет связи с хранилищем. Данные на экране могут быть неполными.")},10000);
+  var gotC=false,gotN=false;
+  function settle(){if(gotC&&gotN){clearTimeout(timer);if(S.canWrite!==false)banner("")}}
+  db.collection("cases").onSnapshot(function(snap){
+    S.cases=snap.docs.filter(function(d){return d.exists}).map(function(d){return norm(d.id,d.data())});
+    if(!snap.metadata.fromCache){S.casesServer=true;gotC=true;settle()}
+    if(S.mode==="db"&&S.casesServer)S.mode="ready";
+    renderAll();syncNotices();
+  },function(err){clearTimeout(timer);banner("Не удалось загрузить реестр. Обновите страницу позже.");});
+  db.collection("notices").onSnapshot(function(snap){
+    S.notices=snap.docs.filter(function(d){return d.exists}).map(function(d){var x=d.data()||{};return {id:d.id,dept:str(x.dept),kind:str(x.kind),caseId:str(x.caseId),caseNo:str(x.caseNo),court:str(x.court),counterparty:str(x.counterparty),subject:str(x.subject),policyNo:str(x.policyNo),lossNo:str(x.lossNo),responsible:str(x.responsible),title:str(x.title),action:str(x.action),amount:x.amount,state:str(x.state)||"new",createdAt:str(x.createdAt),doneAt:str(x.doneAt),doneBy:str(x.doneBy),payNo:str(x.payNo),payDate:str(x.payDate),example:!!x.example}});
+    if(!snap.metadata.fromCache){S.noticesServer=true;gotN=true;settle()}
+    renderAll();syncNotices();resolveNames();
+  },function(err){clearTimeout(timer);});
+  db.collection("files").onSnapshot(function(snap){
+    S.files=snap.docs.filter(function(d){return d.exists}).map(function(d){var x=d.data()||{};return {id:d.id,caseId:str(x.caseId),kind:str(x.kind),name:str(x.name),number:str(x.number),date:str(x.date),amount:x.amount,assetId:str(x.assetId),uploadedAt:str(x.uploadedAt),uploadedBy:str(x.uploadedBy)}});
+    renderRegistry();renderAnalytics();refreshDocBox();resolveNames();
+  },function(err){});
+  /* re-check date-based triggers (acts entering into force) once an hour while the page is open */
+  setInterval(function(){renderAll();syncNotices()},3600000);
+}
+function goLocal(){
+  S.mode="local";
+  banner("Сервер реестра недоступен: изменения сохранятся только до закрытия окна. Запустите start.cmd и откройте сайт по адресу сервера.");
+  renderAll();
+}
+window.pirReport=function(){renderAnalytics();return A_LAST};
+start();
+})();
+</script>
+<script src="present.js"></script>
+</body>
+</html>
