@@ -1089,14 +1089,14 @@ async function start(){
   try{user=await cl.use("user")}catch(e){user=null}
   try{S.assets=await cl.use("assets")}catch(e){S.assets=null}
   if(!db){goLocal();return}
-  S.db=db;S.user=user;S.mode="db";
+  S.db=db;S.user=user;S.mode="db";var DEMO=cl.browserMode?"Демо-версия: данные хранятся только в этом браузере и не видны коллегам. Для совместной работы запустите сервер реестра (start.cmd).":"";if(DEMO)banner(DEMO);
   if(user){
     try{S.uid=await user.id()}catch(e){}
     try{var cw=await user.can("data.write");if(cw===false){S.canWrite=false;banner("У вас доступ только для просмотра. Чтобы вносить дела и отмечать уведомления, попросите владельца страницы выдать роль «Участник» или «Редактор».")}else if(cw===true)S.canWrite=true}catch(e){}
   }
   var timer=setTimeout(function(){banner("Реестр пока не загрузился: нет связи с хранилищем. Данные на экране могут быть неполными.")},10000);
   var gotC=false,gotN=false;
-  function settle(){if(gotC&&gotN){clearTimeout(timer);if(S.canWrite!==false)banner("")}}
+  function settle(){if(gotC&&gotN){clearTimeout(timer);if(S.canWrite!==false)banner(DEMO)}}
   db.collection("cases").onSnapshot(function(snap){
     S.cases=snap.docs.filter(function(d){return d.exists}).map(function(d){return norm(d.id,d.data())});
     if(!snap.metadata.fromCache){S.casesServer=true;gotC=true;settle()}

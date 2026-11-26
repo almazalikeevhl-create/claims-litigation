@@ -31,7 +31,7 @@ $MaxRecords = 25000
 $BlobTypes = @("application/pdf", "image/jpeg", "image/png")
 $StaticTypes = @{
   ".html" = "text/html; charset=utf-8"; ".js" = "application/javascript; charset=utf-8";
-  ".css" = "text/css; charset=utf-8"; ".svg" = "image/svg+xml"; ".png" = "image/png"; ".ico" = "image/x-icon"
+  ".css" = "text/css; charset=utf-8"; ".json" = "application/json; charset=utf-8"; ".svg" = "image/svg+xml"; ".png" = "image/png"; ".ico" = "image/x-icon"
 }
 
 foreach ($d in @($Docs, $Blobs)) { if (-not (Test-Path $d)) { New-Item -ItemType Directory -Path $d | Out-Null } }
